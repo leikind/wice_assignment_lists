@@ -1,0 +1,93 @@
+= Wice Assignment Lists
+
+Version:: 0.1
+Author::  The WICE team
+Website:: http://www.wice.eu
+Email::   "Yuri Leikind" <yuri at wice dot eu>
+
+
+Wice Assignment Lists makes it dead easy to create a widget consisting of two multiple selection lists with items moveable from one to 
+another, and an ajax filter field for the left list to simplify searching for elements.
+
+Wice Assignment Lists fits well as the UI for +has_many+ and +has_and_belongs_to_many+ relations.
+
+== Example
+
+If the models are
+
+	class User < ActiveRecord::Base
+	  has_and_belongs_to_many :groups
+	end
+
+	class Group < ActiveRecord::Base
+	  has_and_belongs_to_many :users
+	end
+
+and a Group instance responds to +name+, then we can build the widget for assigning/removing groups from the user the following way:
+
+	<%= assignment_lists(:groups, Group.find(:all), @user.groups, 
+	                     :label1 => 'All user groups',
+	                     :label2 => 'Groups of the user') -%>
+
+The first argument is the name of the widget and also the name of the HTTP parameter which will be sent from the form. 
+
+
+
+This request parameter will contain a list of IDs of objects in the right column, so  it is ready to be used in actions like
++create+ or +update+ in the following way:
+
+       @user.groups = Group.find(params[:groups])
+
+To retrieve the label of an item in a list, method +name+ is used by default. If it is needed to use a method other than +name+, 
+parameter +method_to_retrieve_object_name+ can be used to change the default:
+
+  <%= assignment_lists(:groups, Group.find(:all), @user.groups, 
+                     :label1 => 'All user groups',
+                     :label2 => 'Groups of the user',
+                     :method_to_retrieve_object_name => :some_method_name ) -%>
+
+For the ajax filter list to function the controller should contain the following declaration:
+
+  class YourController
+  	assignment_lists_filter(:groups) do |str|
+  	  Group.find(:all, :conditions => ['name LIKE ?', "'%" + str + "%'"])
+  	end
+  end
+	
+The first argument is the name of the assignment lists widget. +str+ is the current value of the filter field.
+The block is expected to return a list of objects.
+
+It is possible to use a method instead of the block:
+
+  assignment_lists_filter(:groups, :method_name => :filter_groups)
+    
+  def filter_groups(str)
+    Group.find(:all, :conditions => ['name LIKE ?', "'%" + str + "%'"])
+  end
+
+Filtering can turned off completely, in this mode the widget consists of only two lists and buttons without the filter field:
+
+  <%= assignment_lists(:groups, Group.find(:all), @user.groups, 
+                       :label1 => 'All user groups',
+                       :label2 => 'Groups of the user',
+                       :filter_on => false ) -%>
+
+
+Various defaults can be changed in file <tt>lib/ass_lists_config.rb</tt>.
+
+== Installation
+
+Run the following command to install the plugin:
+
+	script/plugin install  http://svn.wice.eu/public/wice_assignment_lists
+	
+You will see that icon files, a javascript file and a stylesheet have been copied to +public+.
+
+If you are installing manually, copy the files with the following command:
+
+	rake wal:copy_resources_to_public 
+
+== Icons
+
+Icons used by the plugin are courtesy of Mark James, the creator of the SILK icon set -
+http://www.famfamfam.com/lab/icons/silk/.
