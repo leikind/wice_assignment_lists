@@ -1,9 +1,9 @@
 = Wice Assignment Lists
 
 Version:: 0.1
-Author::  The WICE team
-Website:: http://www.wice.eu
-Email::   "Yuri Leikind" <yuri at wice dot eu>
+Author::  Yuri Leikind & The WICE team
+Website:: https://redmine.wice.eu/wiki/wice-ass-lists
+Email::   "Yuri Leikind" <yuri.leikind at gmail dot com>
 
 
 Wice Assignment Lists makes it dead easy to create a widget consisting of two multiple selection lists with items moveable from one to 
