@@ -79,14 +79,12 @@ Various defaults can be changed in file <tt>lib/ass_lists_config.rb</tt>.
 
 Run the following command to install the plugin:
 
-	script/plugin install  http://svn.wice.eu/public/wice_assignment_lists
+	script/plugin install  git://github.com/leikind/wice_assignment_lists.git
 	
-You will see that icon files, a javascript file and a stylesheet have been copied to +public+.
+Run the following to copy the javascript, the stylesheet, and the icons to public, and the configuration file to <tt>config/initializers</tt>:
 
-If you are installing manually, copy the files with the following command:
-
-	rake wal:copy_resources_to_public 
-
+   ./script/generate  assignment_lists_assets
+	
 == Icons
 
 Icons used by the plugin are courtesy of Mark James, the creator of the SILK icon set -
