@@ -60,11 +60,11 @@ module WiceAssignmentLists
         search_param_name = assignment_lists_name.to_s + '_search'
         controller_wrapper_method_name = 'filter_' + assignment_lists_name.to_s
 
-        if block_given? and method_name
+        if block_given? && method_name
           raise ::ArgumentError.new("assignment_lists_filter: cannot take a block and a method name at the same time")
         end
 
-        if method_name.nil? and not block_given?
+        if method_name.nil? && ! block_given?
           raise ArgumentError.new("assignment_lists_filter: specify either a method name returning object, or a block")
         end
 
