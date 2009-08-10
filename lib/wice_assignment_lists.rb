@@ -1,5 +1,6 @@
-require 'ass_lists_config.rb'
 module WiceAssignmentLists
+  module Defaults
+  end
   
   def self.deprecated_call(old_name, new_name, opts) #:nodoc:
     if opts[old_name] && ! opts[new_name]
