@@ -1,33 +1,36 @@
-AssignmentLists = function(srcListId, destListId, outParamName){
-        
-  var srclist  = $(srcListId);
-  var destlist = $(destListId);
-  var f = destlist.form;
+var AssignmentLists = Class.create({
 
-  var hiddenFields = new Array();
+  initialize: function(srcListId, destListId, outParamName){
+    this.outParamName = outParamName;
+    this.srclist  = $(srcListId);
+    this.destlist = $(destListId);
+    this.f = this.destlist.form;
 
-  this.repopulateListFromJSON = function(json){
-    while (srclist.length != 0){
-      srclist.options[0] = null;
+    this.hiddenFields = new Array();
+  },
+
+  repopulateListFromJSON: function(json){
+    while (this.srclist.length != 0){
+      this.srclist.options[0] = null;
     }
     var newListItems = eval('(' + json + ')');
     var opt;
     if (newListItems){
       newListItems.each(function(element, i){
         opt = new Option(element[1], element[0]);
-        srclist.options[i] = opt;
-      });
+        this.srclist.options[i] = opt;
+      }.bind(this));
     }
-  }
+  },
 
-  this.moveElementBetweenLists = function(mode){
+  moveElementBetweenLists:  function(mode){
 
     if (mode == 1){
-      from = destlist;
-      to   = srclist;
+      from = this.destlist;
+      to   = this.srclist;
     }else{
-      from = srclist;
-      to   = destlist;
+      from = this.srclist;
+      to   = this.destlist;
     }
 
     var i = 0;
@@ -40,33 +43,32 @@ AssignmentLists = function(srcListId, destListId, outParamName){
       } else  i++;
     }
     this.updateHiddenField();
-  }
+  },
 
-  this.cleanUpHiddenFields = function(){ 
-    hiddenFields.each(function(element){
-      destlist.form.removeChild(element)
-    });
+  cleanUpHiddenFields:  function(){ 
+    this.hiddenFields.each(function(element){
+      this.destlist.form.removeChild(element)
+    }.bind(this));
     
-    hiddenFields = new Array();
-  }
+    this.hiddenFields = new Array();
+  },
 
-  this.updateHiddenField = function(){
+  updateHiddenField: function(){
     this.cleanUpHiddenFields();
-    destlist.each(function(element,i){
+    for (i = 0; i < this.destlist.length; i++){
       
       el = new Element('input', { 
-        name: outParamName + '[]',
+        name: this.outParamName + '[]',
         type: 'hidden',
-        value: element.value
+        value: this.destlist.options[i].value
       });
       
-      
-      hiddenFields[i] = el;
-      f.appendChild(el);
-    })
-  }
+      this.hiddenFields[i] = el;
+      this.f.appendChild(el);
+    }
+  },
 
-  this.values = function(){
-    return hiddenFields.collect(function(hf){ return hf.value });
+  values: function(){
+    return this.hiddenFields.collect(function(hf){ return hf.value });
   }
-}
+})

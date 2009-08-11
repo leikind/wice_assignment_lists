@@ -1,9 +1,6 @@
 class AssignmentListsAssetsGenerator < Rails::Generator::Base
   def manifest
     record do |m|
-      
-      
-      
       # config
       m.directory "config/initializers"
       m.file "initializers/ass_lists_config.rb",  "config/initializers/ass_lists_config.rb"

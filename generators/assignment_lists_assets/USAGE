@@ -1,8 +1,6 @@
 Description:
   Copies
-  configuration file wice_grid_config.rb to  config/initializers/
-  wice_grid.js  to public/javascripts/
-  wice_grid.css to  public/stylesheets/
-  calendarview.js to public/javascripts/
-  calendarview.css to public/stylesheets/
-  wice_grid images to public/icons/grid
+  configuration file ass_lists_config.rb to  config/initializers/
+  assignment_lists.js  to public/javascripts/
+  assignment_lists.css to  public/stylesheets/
+  wal_edit.png and wal_spinner.gif to public/images/icons/

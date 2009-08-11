@@ -1,7 +1,7 @@
 = Wice Assignment Lists
 
 Version:: 0.1
-Author::  Yuri Leikind & The WICE team
+Author::  Yuri Leikind
 Website:: https://redmine.wice.eu/wiki/wice-ass-lists
 Email::   "Yuri Leikind" <yuri.leikind at gmail dot com>
 
