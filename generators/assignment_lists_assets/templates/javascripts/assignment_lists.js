@@ -42,24 +42,24 @@ var AssignmentLists = Class.create({
     this.updateHiddenField();
   },
 
-  cleanUpHiddenFields:  function(){ 
+  cleanUpHiddenFields:  function(){
     this.hiddenFields.each(function(element){
       this.destlist.form.removeChild(element)
     }.bind(this));
-    
+
     this.hiddenFields = new Array();
   },
 
   updateHiddenField: function(){
     this.cleanUpHiddenFields();
     for (i = 0; i < this.destlist.length; i++){
-      
-      el = new Element('input', { 
+
+      el = new Element('input', {
         name: this.outParamName + '[]',
         type: 'hidden',
         value: this.destlist.options[i].value
       });
-      
+
       this.hiddenFields[i] = el;
       this.f.appendChild(el);
     }
