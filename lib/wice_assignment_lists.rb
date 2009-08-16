@@ -93,7 +93,7 @@ END_OF_STATEMENT
         end
 
         code_for_eval += <<"END_OF_STATEMENT"
-          render :text => list.reject{|p| to_exclude.index(p.id)}.collect{|ed| [ed.#{options[:method_to_retrieve_object_id]}, ed.#{options[:method_to_retrieve_object_name]}]}.to_json
+          render :json => list.reject{|p| to_exclude.index(p.id)}.collect{|ed| [ed.#{options[:method_to_retrieve_object_id]}, ed.#{options[:method_to_retrieve_object_name]}]}.to_json
         end
 END_OF_STATEMENT
 
@@ -137,13 +137,12 @@ END_OF_STATEMENT
       
       observe_field(filter_field_name,
         :frequency => 0.5,
-        :success => js_update_function_name + '(request.responseText)',
+        :success => js_update_function_name + '(request.responseJSON)',
         :url => {:action => filter_action_name, :only_path => false},
         :with => "'#{exclude_parameter}=' + #{js_handler_variable_name}.values() + '&#{search_parameter}=' + encodeURIComponent(value)" +
           context_parameters_string,
         :before   => "$('#{filter_field_name}').className='wal_filter wal_filter_spinner'",
         :complete   => "$('#{filter_field_name}').className='wal_filter'" 
-        
       ) 
     end
     

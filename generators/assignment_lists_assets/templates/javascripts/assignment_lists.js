@@ -9,11 +9,8 @@ var AssignmentLists = Class.create({
     this.hiddenFields = new Array();
   },
 
-  repopulateListFromJSON: function(json){
-    while (this.srclist.length != 0){
-      this.srclist.options[0] = null;
-    }
-    var newListItems = eval('(' + json + ')');
+  repopulateListFromJSON: function(newListItems){
+    this.srclist.update('');
     var opt;
     if (newListItems){
       newListItems.each(function(element, i){
