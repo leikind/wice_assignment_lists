@@ -2,7 +2,7 @@
 
 Version:: 0.1
 Author::  Yuri Leikind
-Website:: https://redmine.wice.eu/wiki/wice-ass-lists
+Website:: http://leikind.org/pages/wice-assignment-lists
 Email::   "Yuri Leikind" <yuri.leikind at gmail dot com>
 
 
