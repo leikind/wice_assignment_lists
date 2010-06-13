@@ -1,5 +1,8 @@
 module WiceAssignmentLists
 
+  # JS_FRAMEWORK = :jquery
+  JS_FRAMEWORK = :prototype
+
   module Defaults
   end
 
@@ -51,20 +54,32 @@ module WiceAssignmentLists
       filter_field_name = name + '_filter'
       context_parameters_string = context_parameters(options)
 
+      observer_options = {
+        :frequency => 0.5,
+        :url => options[:filter_path],
+        :with => "'#{exclude_parameter}=' + #{js_handler_variable_name}.values() + '&#{search_parameter}=' + encodeURIComponent(value)" + context_parameters_string,
+      }
+
+      observer_options.merge!(if JS_FRAMEWORK == :jquery
+        {
+          :success => "#{js_handler_variable_name}.repopulateListFromJSON(request)",
+          :datatype => 'json',
+          :before   => "$('##{filter_field_name}').addClass('wal_filter wal_filter_spinner')",
+          :complete   => "$('##{filter_field_name}').removeClass('wal_filter_spinner')"
+        }
+      else
+        {
+          :success => "#{js_handler_variable_name}.repopulateListFromJSON(request.responseJSON)",
+          :before   => "$('#{filter_field_name}').className='wal_filter wal_filter_spinner'",
+          :complete   => "$('#{filter_field_name}').className='wal_filter'"
+        }
+      end)
+
       text_field_tag(filter_field_name, '', :id => filter_field_name,
         :class => 'wal_filter',
         :autocomplete => "off",
         :style => "width: #{options[:left_column_width] - 20 }px;") +
-
-      observe_field(filter_field_name,
-        :frequency => 0.5,
-        :success => "#{js_handler_variable_name}.repopulateListFromJSON(request)",
-        :datatype => 'json',
-        :url => options[:filter_path],
-        :with => "'#{exclude_parameter}=' + #{js_handler_variable_name}.values() + '&#{search_parameter}=' + encodeURIComponent(value)" + context_parameters_string,
-        :before   => "$('##{filter_field_name}').addClass('wal_filter wal_filter_spinner')",
-        :complete   => "$('##{filter_field_name}').removeClass('wal_filter_spinner')"
-      )
+      observe_field(filter_field_name, observer_options)
     end
 
     def context_parameters(options)   #:nodoc:
@@ -84,12 +99,19 @@ module WiceAssignmentLists
     end
 
     def insert_initialization_of_js_handler(js_handler_variable_name, dom_id1, dom_id2, name)   #:nodoc:
-      javascript_tag %`$(document).ready(function(){\n` +
-        %`  #{js_handler_variable_name} = new AssignmentLists('#{dom_id1}', '#{dom_id2}', '#{name}');\n` +
-        %`  #{js_handler_variable_name}.updateHiddenField();\n` +
+      javascript_tag(
+        if JS_FRAMEWORK == :jquery
+          %`$(document).ready(function(){\n` +
+          %`  #{js_handler_variable_name} = new AssignmentLists('#{dom_id1}', '#{dom_id2}', '#{name}');\n` +
+          %`  #{js_handler_variable_name}.updateHiddenField();\n`
+        else
+          %`Event.observe(window, 'load', function() {\n` +
+          %`  #{js_handler_variable_name} = new AssignmentLists('#{dom_id1}', '#{dom_id2}', '#{name}' );\n` +
+          %`  Event.observe(window, 'load', function() { #{js_handler_variable_name}.updateHiddenField(); });\n`
+        end +
         %`  image = new Image();\n` +
         %`  image.src = "#{WiceAssignmentLists::Defaults::SPINNER_IMAGE_NAME}";\n` +
-        %`})`
+        %`})`)
     end
 
 
