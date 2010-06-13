@@ -43,7 +43,7 @@ Controller :
 
     def update
       @adminstrator_role = Role.find(:first)
-      @adminstrator_role.users = User.find(params[:users])
+      @adminstrator_role.users = params[:users].blank? ? [] : User.find(params[:users])
       redirect_to :action => 'edit'
     end
 
@@ -57,12 +57,12 @@ Controller :
 View:
 
   <% form_tag roles_path, :method =>:put do %>
-  
+
     <%= assignment_lists(:users, @all_users, @adminstrator_role.users,
       :filter_path  => filter_roles_path,
-      :label1 => 'All user groups',
-      :label2 => 'Groups of the user') -%>
-      
+      :label1 => 'All users',
+      :label2 => 'Administrators') -%>
+
     <%= submit_tag 'update' %>
   <% end %>
 
@@ -73,8 +73,8 @@ of the HTTP parameter which will be sent from the form. The same string or symbo
 
 This request parameter will contain a list of IDs of objects in the right column.
 
-To retrieve the label of an item in a list, method +name+ is used by default. 
-If it is needed to use a method other than +name+, 
+To retrieve the label of an item in a list, method +name+ is used by default.
+If it is needed to use a method other than +name+,
 parameter +method_to_retrieve_object_name+ can be used to change the default:
 
   <%= assignment_lists(:users, @all_users, @adminstrator_role.users,
@@ -96,7 +96,7 @@ Various defaults can be changed in file <tt>lib/ass_lists_config.rb</tt>.
 Run the following command to install the plugin:
 
 	script/plugin install  http://github.com/leikind/wice_assignment_lists.git
-	
+
 Run the following to copy the javascript, the stylesheet, and the icons to public, and the configuration file to <tt>config/initializers</tt>:
 
    ./script/generate  assignment_lists_assets
