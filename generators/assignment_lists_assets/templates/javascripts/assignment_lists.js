@@ -1,26 +1,26 @@
-var AssignmentLists = Class.create({
+function AssignmentLists(srcListId, destListId, outParamName){
 
-  initialize: function(srcListId, destListId, outParamName){
-    this.outParamName = outParamName;
-    this.srclist  = $(srcListId);
-    this.destlist = $(destListId);
-    this.f = this.destlist.form;
+  this.outParamName = outParamName;
+  this.srclist  = $(srcListId); //pt
+  this.destlist = $(destListId);//pt
 
-    this.hiddenFields = new Array();
-  },
+  this.parentOfDestList = this.destlist.parentElement;
 
-  repopulateListFromJSON: function(newListItems){
+  this.hiddenFields = new Array();
+
+  this.repopulateListFromJSON = function(newListItems){
     this.srclist.update('');
+    var srclist = this.srclist;
     var opt;
     if (newListItems){
-      newListItems.each(function(element, i){
+      newListItems.each(function(element, i){ // pt
         opt = new Option(element[1], element[0]);
-        this.srclist.options[i] = opt;
-      }.bind(this));
+        srclist.options[i] = opt;
+      });
     }
-  },
+  }
 
-  moveElementBetweenLists:  function(mode){
+  this.moveElementBetweenLists = function(mode){
 
     if (mode == 1){
       from = this.destlist;
@@ -40,32 +40,33 @@ var AssignmentLists = Class.create({
       } else  i++;
     }
     this.updateHiddenField();
-  },
+  }
 
-  cleanUpHiddenFields:  function(){
-    this.hiddenFields.each(function(element){
-      this.destlist.form.removeChild(element)
-    }.bind(this));
+  this.cleanUpHiddenFields = function(){
+    var parentOfDestList = this.parentOfDestList;
+    this.hiddenFields.each(function(element){ // pt
+      parentOfDestList.removeChild(element)
+    });
 
     this.hiddenFields = new Array();
-  },
+  }
 
-  updateHiddenField: function(){
+  this.updateHiddenField = function(){
     this.cleanUpHiddenFields();
+
     for (i = 0; i < this.destlist.length; i++){
 
-      el = new Element('input', {
+      el = new Element('input', { // pt
         name: this.outParamName + '[]',
         type: 'hidden',
         value: this.destlist.options[i].value
       });
-
       this.hiddenFields[i] = el;
-      this.f.appendChild(el);
+      this.parentOfDestList.appendChild(el);
     }
-  },
-
-  values: function(){
-    return this.hiddenFields.collect(function(hf){ return hf.value });
   }
-})
+
+  this.values = function(){
+    return this.hiddenFields.collect(function(hf){ return hf.value }); // pt
+  }
+}
