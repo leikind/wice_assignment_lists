@@ -1,106 +1,28 @@
 module WiceAssignmentLists
+
   module Defaults
-  end
-
-  def self.deprecated_call(old_name, new_name, opts) #:nodoc:
-    if opts[old_name] && ! opts[new_name]
-      opts[new_name] = opts[old_name]
-      opts.delete(old_name)
-      puts "WiceGrid: Parameter :#{old_name} is deprecated, use :#{new_name} instead!"
-    end
-  end
-
-
-  module AssignmentListsGlobalBlockTable   #:nodoc:
-    @@table = HashWithIndifferentAccess.new
-
-    def self.[](k)
-      @@table[k]
-    end
-
-    def self.[]=(k, v)
-      @@table[k] = v
-    end
-
   end
 
   module Controller
 
-    def self.included(base)   #:nodoc:
-      base.extend(ClassMethods)
-    end
-
-    module ClassMethods
-
-
-      # Controller class method to setup filtering. The method either takes a block or a method name to filter objects.
-      # See README for code examples.
-      #
-      #
-      # * +name+ is the name of the widget.
-      # Attributes:
-      # * <tt>:method_to_retrieve_object_name</tt> - Method which will be called for every object in a list to retrieve
-      #   a label for the item.
-      # * <tt>:method_name</tt> - Name of the method which will be called for every AJAX call from the filter field. Using a method
-      #   and a block for filtering are mutually exclusive.
-      def assignment_lists_filter(assignment_lists_name, opts = {}, &block)
-
-        options = {
-          :method_to_retrieve_object_id => :id,
-          :method_to_retrieve_object_name => :name
-        }
-
-        WiceAssignmentLists.deprecated_call(:active_record_method_to_retrieve_object_id, :method_to_retrieve_object_id, opts)
-        WiceAssignmentLists.deprecated_call(:active_record_method_to_retrieve_object_name, :method_to_retrieve_object_name, opts)
-
-        options.merge!(opts)
-        method_name = options[:method_name]
-
-        exclude_param_name = assignment_lists_name.to_s + '_exclude'
-        search_param_name = assignment_lists_name.to_s + '_search'
-        controller_wrapper_method_name = 'filter_' + assignment_lists_name.to_s
-
-        if block_given? && method_name
-          raise ::ArgumentError.new("assignment_lists_filter: cannot take a block and a method name at the same time")
-        end
-
-        if method_name.nil? && ! block_given?
-          raise ArgumentError.new("assignment_lists_filter: specify either a method name returning object, or a block")
-        end
-
-        code_for_eval = <<"END_OF_STATEMENT"
-          def #{controller_wrapper_method_name}
-            to_exclude = params[:#{exclude_param_name}].split(',').collect{|i| i.to_i}
-END_OF_STATEMENT
-
-        if block_given?
-
-          #logger.debug('+++' + self.to_s)
-
-          AssignmentListsGlobalBlockTable[assignment_lists_name] = block
-
-          code_for_eval += <<"END_OF_STATEMENT"
-
-              list = AssignmentListsGlobalBlockTable[:#{assignment_lists_name}].call(params[:#{search_param_name}])
-END_OF_STATEMENT
-
-        else
-
-          code_for_eval += <<"END_OF_STATEMENT"
-              list = #{method_name}(params[:#{search_param_name}])
-END_OF_STATEMENT
-
-        end
-
-        code_for_eval += <<"END_OF_STATEMENT"
-          render :json => list.reject{|p| to_exclude.index(p.id)}.collect{|ed| [ed.#{options[:method_to_retrieve_object_id]}, ed.#{options[:method_to_retrieve_object_name]}]}.to_json
-        end
-END_OF_STATEMENT
-
-
-        # logger.debug("generated code\n" + code_for_eval)
-        self.class_eval code_for_eval
-      end
+    # Controller method to setup filtering. To be used inside a filter method.
+    # The method takes a block which is expected to return a list of
+    # found objects, and renders the response in the correct format.
+    # The parameter of the block is the search string.
+    #
+    # The argument is the name of the view widget (first argument to +assignment_lists+)
+    # Example:
+    #   def filter
+    #     assignment_lists_filter(:users) do |str|
+    #       User.find(:all, :conditions => ['name LIKE ?', "%" + str + "%"])
+    #     end
+    #   end
+    def assignment_lists_filter(name)
+      list = yield params["#{name}_search"]
+      to_exclude = params["#{name}_exclude"].split(',').map(&:to_i)
+      render :json => list.reject{|p| to_exclude.index(p.id)}.collect{|ed|
+         [ed.id, ed.name]
+       }.to_json
     end
   end
 
@@ -122,9 +44,8 @@ END_OF_STATEMENT
 
 
     def search_control(name, js_update_function_name, js_handler_variable_name, options)   #:nodoc:
-      return '' if options[:filter_on].blank?
+      return '' if options[:filter_path].blank?
 
-      filter_action_name = 'filter_' + name
       exclude_parameter = name + '_exclude'
       search_parameter = name + '_search'
       filter_field_name = name + '_filter'
@@ -138,9 +59,8 @@ END_OF_STATEMENT
       observe_field(filter_field_name,
         :frequency => 0.5,
         :success => js_update_function_name + '(request.responseJSON)',
-        :url => {:action => filter_action_name, :only_path => false},
-        :with => "'#{exclude_parameter}=' + #{js_handler_variable_name}.values() + '&#{search_parameter}=' + encodeURIComponent(value)" +
-          context_parameters_string,
+        :url => options[:filter_path],
+        :with => "'#{exclude_parameter}=' + #{js_handler_variable_name}.values() + '&#{search_parameter}=' + encodeURIComponent(value)" + context_parameters_string,
         :before   => "$('#{filter_field_name}').className='wal_filter wal_filter_spinner'",
         :complete   => "$('#{filter_field_name}').className='wal_filter'"
       )
@@ -201,7 +121,7 @@ END_OF_STATEMENT
     #   The default value can be changed in <tt>lib/ass_lists_config.rb</tt>.
     # * <tt>:remove_button_label</tt> - The label on a button which moves items from the right list to the left list.
     #   The default value can be changed in <tt>lib/ass_lists_config.rb</tt>.
-    # * <tt>:filter_on</tt> - Defines whether the filter field is present or not.
+    # * <tt>:filter_path</tt> - The path for the Ajax request to post to. If absent, no filter field is rendered.
     # * <tt>:context_parameters</tt> - A hash of HTTP parameters to be sent together with the AJAX request of the filter field.
 
     def assignment_lists(name, all_elements_list, list2, opts = {})
@@ -215,12 +135,12 @@ END_OF_STATEMENT
                  :method_to_retrieve_object_name => :name,
                  :label1               => '',
                  :label2               => '',
-                 :filter_on            => true,
+                 :filter_path   => nil,
                  :context_parameters => {} }
 
-      WiceAssignmentLists.deprecated_call(:active_record_method_to_retrieve_object_name, :method_to_retrieve_object_name, opts)
-
       options.merge!(opts)
+
+
       name = name.to_s
 
       list1 = all_elements_list - list2
@@ -235,7 +155,7 @@ END_OF_STATEMENT
       search_control_content = ''
       update_function_content = ''
 
-      if options[:filter_on]
+      if options[:filter_path]
         js_update_function_name = name + '_update'
         extra_row = 1
 
@@ -246,7 +166,7 @@ END_OF_STATEMENT
       end
 
       # and here goes the mess
-      update_function_content + '<table><tr><td style="text-align: center;" >' + options[:label1]  +
+      res = update_function_content + '<table><tr><td style="text-align: center;" >' + options[:label1]  +
       %!</td><td></td><td style="text-align: center;" >#{options[:label2]}</td></tr><tr>! +
       %!<td style="vertical-align: top; text-align: left; width: #{options[:left_column_width]}px;">\n! +
       search_control_content +
@@ -259,6 +179,9 @@ END_OF_STATEMENT
       %!name="#{dom_id2}" size="#{options[:rows_to_show] + extra_row}">! +
       "#{list2}</select></td></tr></table>" +
       insert_initialization_of_js_handler(js_handler_variable_name, dom_id1, dom_id2, name)
+
+      res.respond_to?(:html_safe) ? res.html_safe : res
+
     end
   end
 end
