@@ -58,24 +58,13 @@ module WiceAssignmentLists
 
       observe_field(filter_field_name,
         :frequency => 0.5,
-        :success => js_update_function_name + '(request.responseJSON)',
+        :success => "#{js_handler_variable_name}.repopulateListFromJSON(request)",
+        :datatype => 'json',
         :url => options[:filter_path],
         :with => "'#{exclude_parameter}=' + #{js_handler_variable_name}.values() + '&#{search_parameter}=' + encodeURIComponent(value)" + context_parameters_string,
-        :before   => "$('#{filter_field_name}').className='wal_filter wal_filter_spinner'",
-        :complete   => "$('#{filter_field_name}').className='wal_filter'"
+        :before   => "$('##{filter_field_name}').addClass('wal_filter wal_filter_spinner')",
+        :complete   => "$('##{filter_field_name}').removeClass('wal_filter_spinner')"
       )
-    end
-
-    def insert_update_function(js_update_function_name, js_handler_variable_name)   #:nodoc:
-      "\n<script type=\"text/javascript\">
-      //<![CDATA[
-        function #{js_update_function_name}(json_code){
-          #{js_handler_variable_name}.repopulateListFromJSON(json_code);
-        }
-        image = new Image();
-        image.src = \"#{WiceAssignmentLists::Defaults::SPINNER_IMAGE_NAME}\";
-        //]]>
-        </script>\n"  #the two last lines are for preloading the spinner image.
     end
 
     def context_parameters(options)   #:nodoc:
@@ -95,12 +84,12 @@ module WiceAssignmentLists
     end
 
     def insert_initialization_of_js_handler(js_handler_variable_name, dom_id1, dom_id2, name)   #:nodoc:
-      "\n<script type=\"text/javascript\">
-      //<![CDATA[
-        var #{js_handler_variable_name} = new AssignmentLists('#{dom_id1}', '#{dom_id2}', '#{name}' );
-        Event.observe(window, 'load', function() { #{js_handler_variable_name}.updateHiddenField(); });
-      //]]>
-      </script>\n"
+      javascript_tag %`$(document).ready(function(){\n` +
+        %`  #{js_handler_variable_name} = new AssignmentLists('#{dom_id1}', '#{dom_id2}', '#{name}');\n` +
+        %`  #{js_handler_variable_name}.updateHiddenField();\n` +
+        %`  image = new Image();\n` +
+        %`  image.src = "#{WiceAssignmentLists::Defaults::SPINNER_IMAGE_NAME}";\n` +
+        %`})`
     end
 
 
@@ -153,20 +142,18 @@ module WiceAssignmentLists
 
       js_handler_variable_name = 'handler_' + name
       search_control_content = ''
-      update_function_content = ''
 
       if options[:filter_path]
         js_update_function_name = name + '_update'
         extra_row = 1
 
         search_control_content = search_control(name, js_update_function_name, js_handler_variable_name, options)
-        update_function_content = insert_update_function(js_update_function_name, js_handler_variable_name)
       else
         extra_row = 0
       end
 
       # and here goes the mess
-      res = update_function_content + '<table><tr><td style="text-align: center;" >' + options[:label1]  +
+      res = '<table><tr><td style="text-align: center;" >' + options[:label1]  +
       %!</td><td></td><td style="text-align: center;" >#{options[:label2]}</td></tr><tr>! +
       %!<td style="vertical-align: top; text-align: left; width: #{options[:left_column_width]}px;">\n! +
       search_control_content +
