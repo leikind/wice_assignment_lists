@@ -1,4 +1,4 @@
-= Wice Assignment Lists
+= Assignment Lists
 
 Version:: 0.2
 Author::  Yuri Leikind
@@ -6,14 +6,14 @@ Website:: http://leikind.org/pages/wice-assignment-lists
 Email::   "Yuri Leikind" <yuri.leikind at gmail dot com>
 
 
-Wice Assignment Lists makes it dead easy to create a widget consisting of two multiple selection lists with
+Assignment Lists makes it dead easy to create a widget consisting of two multiple selection lists with
 items moveable from one to another, and an ajax filter field for the left list to simplify searching for elements.
 
-Wice Assignment Lists fits well as the UI for +has_many+ and +has_and_belongs_to_many+ relations.
+Assignment Lists fits well as the UI for +has_many+ and +has_and_belongs_to_many+ relations.
 
-Wice Assignment Lists works currently only under Prototype.
+Assignment Lists works currently only under Prototype.
 
-Wice Assignment Lists works with Rails 2.3.8 with or without rails_xss.
+Assignment Lists works with Rails 2.3.8 with or without rails_xss.
 
 == Example
 

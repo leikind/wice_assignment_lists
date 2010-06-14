@@ -1,4 +1,4 @@
-module WiceAssignmentLists
+module AssignmentLists
 
   # JS_FRAMEWORK = :jquery
   JS_FRAMEWORK = :prototype
@@ -110,7 +110,7 @@ module WiceAssignmentLists
           %`  #{js_handler_variable_name}.updateHiddenField();\n`
         end +
         %`  image = new Image();\n` +
-        %`  image.src = "#{WiceAssignmentLists::Defaults::SPINNER_IMAGE_NAME}";\n` +
+        %`  image.src = "#{AssignmentLists::Defaults::SPINNER_IMAGE_NAME}";\n` +
         %`})`)
     end
 
@@ -137,12 +137,12 @@ module WiceAssignmentLists
 
     def assignment_lists(name, all_elements_list, list2, opts = {})
 
-      options = {:left_column_width    => WiceAssignmentLists::Defaults::LEFT_COLUMN_WIDTH,
-                 :right_column_width   => WiceAssignmentLists::Defaults::RIGHT_COLUMN_WIDTH,
-                 :rows_to_show         => WiceAssignmentLists::Defaults::ROWS_TO_SHOW,
-                 :add_button_label     => WiceAssignmentLists::Defaults::ADD_BUTTON_LABEL,
-                 :remove_button_label  => WiceAssignmentLists::Defaults::REMOVE_BUTTON_LABEL,
-                 :spinner_image_name   => WiceAssignmentLists::Defaults::SPINNER_IMAGE_NAME,
+      options = {:left_column_width    => AssignmentLists::Defaults::LEFT_COLUMN_WIDTH,
+                 :right_column_width   => AssignmentLists::Defaults::RIGHT_COLUMN_WIDTH,
+                 :rows_to_show         => AssignmentLists::Defaults::ROWS_TO_SHOW,
+                 :add_button_label     => AssignmentLists::Defaults::ADD_BUTTON_LABEL,
+                 :remove_button_label  => AssignmentLists::Defaults::REMOVE_BUTTON_LABEL,
+                 :spinner_image_name   => AssignmentLists::Defaults::SPINNER_IMAGE_NAME,
                  :method_to_retrieve_object_name => :name,
                  :label1               => '',
                  :label2               => '',
