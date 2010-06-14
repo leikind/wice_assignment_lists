@@ -1,4 +1,4 @@
-module WiceAssignmentLists
+module AssignmentLists
 
   module Defaults
   end
@@ -51,31 +51,32 @@ module WiceAssignmentLists
       filter_field_name = name + '_filter'
       context_parameters_string = context_parameters(options)
 
+      observer_options = {
+        :frequency => 0.5,
+        :url => options[:filter_path],
+        :with => "'#{exclude_parameter}=' + #{js_handler_variable_name}.values() + '&#{search_parameter}=' + encodeURIComponent(value)" + context_parameters_string,
+      }
+
+      observer_options.merge!(if AssignmentLists::Defaults::JS_FRAMEWORK == :jquery
+        {
+          :success => "#{js_handler_variable_name}.repopulateListFromJSON(request)",
+          :datatype => 'json',
+          :before   => "$('##{filter_field_name}').addClass('wal_filter wal_filter_spinner')",
+          :complete   => "$('##{filter_field_name}').removeClass('wal_filter_spinner')"
+        }
+      else
+        {
+          :success => "#{js_handler_variable_name}.repopulateListFromJSON(request.responseJSON)",
+          :before   => "$('#{filter_field_name}').className='wal_filter wal_filter_spinner'",
+          :complete   => "$('#{filter_field_name}').className='wal_filter'"
+        }
+      end)
+
       text_field_tag(filter_field_name, '', :id => filter_field_name,
         :class => 'wal_filter',
         :autocomplete => "off",
         :style => "width: #{options[:left_column_width] - 20 }px;") +
-
-      observe_field(filter_field_name,
-        :frequency => 0.5,
-        :success => js_update_function_name + '(request.responseJSON)',
-        :url => options[:filter_path],
-        :with => "'#{exclude_parameter}=' + #{js_handler_variable_name}.values() + '&#{search_parameter}=' + encodeURIComponent(value)" + context_parameters_string,
-        :before   => "$('#{filter_field_name}').className='wal_filter wal_filter_spinner'",
-        :complete   => "$('#{filter_field_name}').className='wal_filter'"
-      )
-    end
-
-    def insert_update_function(js_update_function_name, js_handler_variable_name)   #:nodoc:
-      "\n<script type=\"text/javascript\">
-      //<![CDATA[
-        function #{js_update_function_name}(json_code){
-          #{js_handler_variable_name}.repopulateListFromJSON(json_code);
-        }
-        image = new Image();
-        image.src = \"#{WiceAssignmentLists::Defaults::SPINNER_IMAGE_NAME}\";
-        //]]>
-        </script>\n"  #the two last lines are for preloading the spinner image.
+      observe_field(filter_field_name, observer_options)
     end
 
     def context_parameters(options)   #:nodoc:
@@ -95,12 +96,19 @@ module WiceAssignmentLists
     end
 
     def insert_initialization_of_js_handler(js_handler_variable_name, dom_id1, dom_id2, name)   #:nodoc:
-      "\n<script type=\"text/javascript\">
-      //<![CDATA[
-        var #{js_handler_variable_name} = new AssignmentLists('#{dom_id1}', '#{dom_id2}', '#{name}' );
-        Event.observe(window, 'load', function() { #{js_handler_variable_name}.updateHiddenField(); });
-      //]]>
-      </script>\n"
+      javascript_tag(
+        if AssignmentLists::Defaults::JS_FRAMEWORK == :jquery
+          %`$(document).ready(function(){\n` +
+          %`  #{js_handler_variable_name} = new AssignmentLists('#{dom_id1}', '#{dom_id2}', '#{name}');\n` +
+          %`  #{js_handler_variable_name}.updateHiddenField();\n`
+        else
+          %`Event.observe(window, 'load', function() {\n` +
+          %`  #{js_handler_variable_name} = new AssignmentLists('#{dom_id1}', '#{dom_id2}', '#{name}' );\n` +
+          %`  #{js_handler_variable_name}.updateHiddenField();\n`
+        end +
+        %`  image = new Image();\n` +
+        %`  image.src = "#{AssignmentLists::Defaults::SPINNER_IMAGE_NAME}";\n` +
+        %`})`)
     end
 
 
@@ -126,12 +134,12 @@ module WiceAssignmentLists
 
     def assignment_lists(name, all_elements_list, list2, opts = {})
 
-      options = {:left_column_width    => WiceAssignmentLists::Defaults::LEFT_COLUMN_WIDTH,
-                 :right_column_width   => WiceAssignmentLists::Defaults::RIGHT_COLUMN_WIDTH,
-                 :rows_to_show         => WiceAssignmentLists::Defaults::ROWS_TO_SHOW,
-                 :add_button_label     => WiceAssignmentLists::Defaults::ADD_BUTTON_LABEL,
-                 :remove_button_label  => WiceAssignmentLists::Defaults::REMOVE_BUTTON_LABEL,
-                 :spinner_image_name   => WiceAssignmentLists::Defaults::SPINNER_IMAGE_NAME,
+      options = {:left_column_width    => AssignmentLists::Defaults::LEFT_COLUMN_WIDTH,
+                 :right_column_width   => AssignmentLists::Defaults::RIGHT_COLUMN_WIDTH,
+                 :rows_to_show         => AssignmentLists::Defaults::ROWS_TO_SHOW,
+                 :add_button_label     => AssignmentLists::Defaults::ADD_BUTTON_LABEL,
+                 :remove_button_label  => AssignmentLists::Defaults::REMOVE_BUTTON_LABEL,
+                 :spinner_image_name   => AssignmentLists::Defaults::SPINNER_IMAGE_NAME,
                  :method_to_retrieve_object_name => :name,
                  :label1               => '',
                  :label2               => '',
@@ -153,20 +161,18 @@ module WiceAssignmentLists
 
       js_handler_variable_name = 'handler_' + name
       search_control_content = ''
-      update_function_content = ''
 
       if options[:filter_path]
         js_update_function_name = name + '_update'
         extra_row = 1
 
         search_control_content = search_control(name, js_update_function_name, js_handler_variable_name, options)
-        update_function_content = insert_update_function(js_update_function_name, js_handler_variable_name)
       else
         extra_row = 0
       end
 
       # and here goes the mess
-      res = update_function_content + '<table><tr><td style="text-align: center;" >' + options[:label1]  +
+      res = '<table><tr><td style="text-align: center;" >' + options[:label1]  +
       %!</td><td></td><td style="text-align: center;" >#{options[:label2]}</td></tr><tr>! +
       %!<td style="vertical-align: top; text-align: left; width: #{options[:left_column_width]}px;">\n! +
       search_control_content +

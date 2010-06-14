@@ -1,4 +1,4 @@
-= Wice Assignment Lists
+= Assignment Lists
 
 Version:: 0.2
 Author::  Yuri Leikind
@@ -6,16 +6,57 @@ Website:: http://leikind.org/pages/wice-assignment-lists
 Email::   "Yuri Leikind" <yuri.leikind at gmail dot com>
 
 
-Wice Assignment Lists makes it dead easy to create a widget consisting of two multiple selection lists with
+Assignment Lists makes it dead easy to create a widget consisting of two multiple selection lists with
 items moveable from one to another, and an ajax filter field for the left list to simplify searching for elements.
 
-Wice Assignment Lists fits well as the UI for +has_many+ and +has_and_belongs_to_many+ relations.
+Assignment Lists fits well as the UI for +has_many+ and +has_and_belongs_to_many+ relations.
 
-Wice Assignment Lists works currently only under Prototype.
+Assignment Lists can work under Prototype or jQuery. See installation instructions.
 
-Wice Assignment Lists works with Rails 2.3.8 with or without rails_xss.
+Assignment Lists works with Rails 2.3.8 with or without rails_xss.
+
+== Installation
+
+Install the plugin:
+
+  script/plugin install  http://github.com/leikind/wice_assignment_lists.git
+
+Run the generator to copy the javascript, the stylesheet, and the icons to public, and the configuration file to <tt>config/initializers</tt>:
+
+   ./script/generate  assignment_lists_assets
+
+
+Require the stylesheet:
+
+     <%= stylesheet_link_tag 'assignment_lists' %>
+
+This generator copies two javascript files into <tt>public/javascripts</tt> -
+<tt>assignment_lists_prototype.js</tt> and <tt>assignment_lists_jquery.js</tt>.
+
+=== Prototype
+
+For a Prototype based app, just delete <tt>assignment_lists_jquery.js</tt> and add require the correct 
+javascript file in your layout:
+
+     <%= javascript_include_tag 'assignment_lists_jquery' %>
+
+=== jQuery
+
+For a jQuery based app, edit <tt>config/initializers/ass_lists_config.rb</tt> and change
+
+  AssignmentLists::Defaults::JS_FRAMEWORK = :prototype
+  
+to
+
+  AssignmentLists::Defaults::JS_FRAMEWORK = :jquery
+  
+Then delete <tt>assignment_lists_prototype.js</tt> and add require the correct 
+javascript file in your layout:
+
+     <%= javascript_include_tag 'assignment_lists_jquery' %>
 
 == Example
+
 
 Models:
 
@@ -91,15 +132,6 @@ No filter action is needed in the controller in this case.
 
 Various defaults can be changed in file <tt>lib/ass_lists_config.rb</tt>.
 
-== Installation
-
-Run the following command to install the plugin:
-
-	script/plugin install  http://github.com/leikind/wice_assignment_lists.git
-
-Run the following to copy the javascript, the stylesheet, and the icons to public, and the configuration file to <tt>config/initializers</tt>:
-
-   ./script/generate  assignment_lists_assets
 
 == Icons
 

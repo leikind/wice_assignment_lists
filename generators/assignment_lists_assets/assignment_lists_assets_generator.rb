@@ -6,7 +6,9 @@ class AssignmentListsAssetsGenerator < Rails::Generator::Base
       m.file "initializers/ass_lists_config.rb",  "config/initializers/ass_lists_config.rb"
 
       # js & css
-      m.file "javascripts/assignment_lists.js",  "public/javascripts/assignment_lists.js"
+      m.file "javascripts/assignment_lists_jquery.js",  "public/javascripts/assignment_lists_jquery.js"
+      m.file "javascripts/assignment_lists_prototype.js",  "public/javascripts/assignment_lists_prototype.js"
+
       m.file "stylesheets/assignment_lists.css",  "public/stylesheets/assignment_lists.css"
 
       # images

@@ -1,17 +1,10 @@
 .wal_filter {
-/* 
-  border:1px solid #bbb;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  padding-left: 1px;
-  margin-bottom: 0px;
-*/  
-	padding-right: 16px; 
-	background-image: url(/images/icons/wal_edit.png);
-	background-repeat: no-repeat; 
-	background-position:  center right;
+  padding-right: 16px; 
+  background-image: url(/images/icons/wal_edit.png);
+  background-repeat: no-repeat; 
+  background-position:  center right;
 }
 
 .wal_filter_spinner {
-	background-image: url(/images/icons/wal_spinner.gif);
+  background-image: url(/images/icons/wal_spinner.gif);
 }
