@@ -1,8 +1,5 @@
 module AssignmentLists
 
-  # JS_FRAMEWORK = :jquery
-  JS_FRAMEWORK = :prototype
-
   module Defaults
   end
 
@@ -60,7 +57,7 @@ module AssignmentLists
         :with => "'#{exclude_parameter}=' + #{js_handler_variable_name}.values() + '&#{search_parameter}=' + encodeURIComponent(value)" + context_parameters_string,
       }
 
-      observer_options.merge!(if JS_FRAMEWORK == :jquery
+      observer_options.merge!(if AssignmentLists::Defaults::JS_FRAMEWORK == :jquery
         {
           :success => "#{js_handler_variable_name}.repopulateListFromJSON(request)",
           :datatype => 'json',
@@ -100,7 +97,7 @@ module AssignmentLists
 
     def insert_initialization_of_js_handler(js_handler_variable_name, dom_id1, dom_id2, name)   #:nodoc:
       javascript_tag(
-        if JS_FRAMEWORK == :jquery
+        if AssignmentLists::Defaults::JS_FRAMEWORK == :jquery
           %`$(document).ready(function(){\n` +
           %`  #{js_handler_variable_name} = new AssignmentLists('#{dom_id1}', '#{dom_id2}', '#{name}');\n` +
           %`  #{js_handler_variable_name}.updateHiddenField();\n`

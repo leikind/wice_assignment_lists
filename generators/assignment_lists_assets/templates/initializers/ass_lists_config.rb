@@ -1,5 +1,8 @@
 if defined?(AssignmentLists::Defaults)
-  
+
+  # AssignmentLists::Defaults::JS_FRAMEWORK = :jquery
+  AssignmentLists::Defaults::JS_FRAMEWORK = :prototype
+
   # The label on a button which moves items from the left list to the right list.
   AssignmentLists::Defaults::ADD_BUTTON_LABEL    = ' &gt;&gt; '
 
