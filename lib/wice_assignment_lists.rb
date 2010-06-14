@@ -107,7 +107,7 @@ module WiceAssignmentLists
         else
           %`Event.observe(window, 'load', function() {\n` +
           %`  #{js_handler_variable_name} = new AssignmentLists('#{dom_id1}', '#{dom_id2}', '#{name}' );\n` +
-          %`  Event.observe(window, 'load', function() { #{js_handler_variable_name}.updateHiddenField(); });\n`
+          %`  #{js_handler_variable_name}.updateHiddenField();\n`
         end +
         %`  image = new Image();\n` +
         %`  image.src = "#{WiceAssignmentLists::Defaults::SPINNER_IMAGE_NAME}";\n` +
