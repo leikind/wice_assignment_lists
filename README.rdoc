@@ -38,7 +38,7 @@ This generator copies two javascript files into <tt>public/javascripts</tt> -
 For a Prototype based app, just delete <tt>assignment_lists_jquery.js</tt> and add require the correct 
 javascript file in your layout:
 
-     <%= javascript_include_tag 'assignment_lists_jquery' %>
+     <%= javascript_include_tag 'assignment_lists_prototype' %>
 
 === jQuery
 
@@ -70,7 +70,7 @@ Models:
 
 Routes:
 
-  map.resource :roles, :member => {:filter => :post}
+  map.resource :roles, :collection => {:filter => :post}
 
 Controller :
 
