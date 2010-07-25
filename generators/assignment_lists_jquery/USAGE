@@ -2,6 +2,5 @@ Description:
   Copies
   configuration file ass_lists_config.rb to  config/initializers/
   assignment_lists_jquery.js  to public/javascripts/
-  assignment_lists_prototype.js  to public/javascripts/
   assignment_lists.css to  public/stylesheets/
   wal_edit.png and wal_spinner.gif to public/images/icons/

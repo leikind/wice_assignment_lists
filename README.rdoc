@@ -21,39 +21,34 @@ Install the plugin:
 
   script/plugin install  http://github.com/leikind/wice_assignment_lists.git
 
-Run the generator to copy the javascript, the stylesheet, and the icons to public, and the configuration file to <tt>config/initializers</tt>:
+If the application is prototype-based:
 
-   ./script/generate  assignment_lists_assets
+   ./script/generate  assignment_lists_prototype
+   
+Require the javascript file from your template:
 
+     <%= javascript_include_tag 'assignment_lists_prototype' %>
+
+If the application is jquery-based:
+
+  ./script/generate  assignment_lists_jquery
+
+Require the javascript file from your template:
+
+     <%= javascript_include_tag 'assignment_lists_jquery' %>
 
 Require the stylesheet:
 
      <%= stylesheet_link_tag 'assignment_lists' %>
 
-This generator copies two javascript files into <tt>public/javascripts</tt> -
-<tt>assignment_lists_prototype.js</tt> and <tt>assignment_lists_jquery.js</tt>.
+=== Prototype & jQuery
 
-=== Prototype
+The plugin works under Prototype and jQuery. There is a separate JS file for each framework. The generators
+copies the correct file to the <tt>public</tt> directory.
 
-For a Prototype based app, just delete <tt>assignment_lists_jquery.js</tt> and add require the correct 
-javascript file in your layout:
+If you want to change the JS framework manually, copy the correct file and change constant 
+<tt>AssignmentLists::Defaults::JS_FRAMEWORK</tt> in <tt>config/initializers/ass_lists_config.rb</tt>
 
-     <%= javascript_include_tag 'assignment_lists_prototype' %>
-
-=== jQuery
-
-For a jQuery based app, edit <tt>config/initializers/ass_lists_config.rb</tt> and change
-
-  AssignmentLists::Defaults::JS_FRAMEWORK = :prototype
-  
-to
-
-  AssignmentLists::Defaults::JS_FRAMEWORK = :jquery
-  
-Then delete <tt>assignment_lists_prototype.js</tt> and add require the correct 
-javascript file in your layout:
-
-     <%= javascript_include_tag 'assignment_lists_jquery' %>
 
 == Example
 
