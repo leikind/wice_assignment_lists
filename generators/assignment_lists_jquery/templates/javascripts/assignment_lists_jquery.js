@@ -5,7 +5,7 @@ function AssignmentLists(srcListId, destListId, outParamName){
   this.srclist  = $('#' + srcListId)[0];
   this.destlist = $('#' + destListId)[0];
 
-  this.parentOfDestList = this.destlist.parentElement;
+  this.parentOfDestList = this.destlist.parentNode;
 
   this.repopulateListFromJSON = function(newListItems){
     $(this.srclist).children().remove();
