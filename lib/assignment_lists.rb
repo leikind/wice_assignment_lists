@@ -172,7 +172,7 @@ module AssignmentLists
       end
 
       # and here goes the mess
-      res = '<table><tr><td style="text-align: center;" >' + options[:label1]  +
+      res = '<table class="assignment-lists"><tr><td style="text-align: center;" >' + options[:label1]  +
       %!</td><td></td><td style="text-align: center;" >#{options[:label2]}</td></tr><tr>! +
       %!<td style="vertical-align: top; text-align: left; width: #{options[:left_column_width]}px;">\n! +
       search_control_content +
