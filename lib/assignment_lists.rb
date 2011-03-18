@@ -28,20 +28,6 @@ module AssignmentLists
 
   module Helper
 
-    # overriding Rails options_for_select to get title="..."
-    def options_for_select(container, selected = nil)   #:nodoc:
-      container = container.to_a if Hash === container
-
-      options_for_select = container.inject([]) do |options, element|
-        text, value = option_text_and_value(element)
-        escaped_text = html_escape(text.to_s)
-        selected_attribute = ' selected="selected"' if option_value_selected?(value, selected)
-        options << %(<option title="#{escaped_text}" value="#{html_escape(value.to_s)}"#{selected_attribute}>#{escaped_text}</option>)
-      end
-
-      options_for_select.join("\n")
-    end
-
 
     def search_control(name, js_update_function_name, js_handler_variable_name, options)   #:nodoc:
       return '' if options[:filter_path].blank?
