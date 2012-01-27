@@ -17,11 +17,11 @@ module AssignmentLists
     #       User.find(:all, :conditions => ['name LIKE ?', "%" + str + "%"])
     #     end
     #   end
-    def assignment_lists_filter(name)
+    def assignment_lists_filter(name, method_to_retrieve_object_name = :name)
       list = yield params["#{name}_search"]
       to_exclude = params["#{name}_exclude"].split(',').map(&:to_i)
       render :json => list.reject{|p| to_exclude.index(p.id)}.collect{|ed|
-         [ed.id, ed.name]
+         [ed.id, ed.send(method_to_retrieve_object_name)]
        }.to_json
     end
   end
