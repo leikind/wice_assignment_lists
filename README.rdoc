@@ -73,13 +73,13 @@ Controller :
     layout 'common'
 
     def edit
-      @adminstrator_role = Role.find(:first)
+      @administrator_role = Role.find(:first)
       @all_users         = User.find(:all)
     end
 
     def update
-      @adminstrator_role = Role.find(:first)
-      @adminstrator_role.users = params[:users].blank? ? [] : User.find(params[:users])
+      @administrator_role = Role.find(:first)
+      @administrator_role.users = params[:users].blank? ? [] : User.find(params[:users])
       redirect_to :action => 'edit'
     end
 
@@ -94,7 +94,7 @@ View:
 
   <% form_tag roles_path, :method =>:put do %>
 
-    <%= assignment_lists(:users, @all_users, @adminstrator_role.users,
+    <%= assignment_lists(:users, @all_users, @administrator_role.users,
       :filter_path  => filter_roles_path,
       :label1 => 'All users',
       :label2 => 'Administrators') -%>
@@ -113,7 +113,7 @@ To retrieve the label of an item in a list, method +name+ is used by default.
 If it is needed to use a method other than +name+,
 parameter +method_to_retrieve_object_name+ can be used to change the default:
 
-  <%= assignment_lists(:users, @all_users, @adminstrator_role.users,
+  <%= assignment_lists(:users, @all_users, @administrator_role.users,
     :method_to_retrieve_object_name => :some_method_name
     :filter_path  => filter_roles_path,
     :label1 => 'All user groups',
